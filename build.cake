@@ -6,50 +6,39 @@ var configuration = BuildSystem.IsRunningOnAppVeyor
     : "Debug"; 
 
 Task("Clean")
-    .Does(()=>{
-        DotNetBuild(slnFile, settings => settings
-            .SetConfiguration(configuration)
-            .WithTarget("Clean") );
-    });
+    .Does(() =>
+{
+    DotNetBuild(slnFile, settings => settings
+	.SetConfiguration(configuration)
+	.WithTarget("Clean") );
+});
 
 Task("Restore")
-	.Does(() => 
+    .Does(() => 
 {
-	NuGetRestore(slnFile);
+    NuGetRestore(slnFile);
 });
 
 Task("Build")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
-    .Does(()=>
+    .Does(() =>
 {
     DotNetBuild(slnFile, settings => settings
         .SetConfiguration(configuration));
 });
 
 Task("Test")
-	.IsDependentOn("Build")
-	.Does(() =>
+    .IsDependentOn("Build")
+    .Does(() =>
 {
-	var tests = @".\FSpike.Tests\bin\" + configuration + @"\FSpike.Tests.exe";
-	//using(var process = StartAndReturnProcess(tests))
-	//{
-	//	process.WaitForExit();
-	//	// This should output 0 as valid arguments supplied
-	//	Information("Exit code: {0}", process.GetExitCode());
-	//}
-
-	var exitCode = StartProcess(tests);
-
-	if (exitCode > 0) throw new Exception("Tests failed with exit code of " + exitCode);
+    var tests = @".\FSpike.Tests\bin\" + configuration + @"\FSpike.Tests.exe";
+    var exitCode = StartProcess(tests);
+    if (exitCode > 0) throw new Exception("Tests failed with exit code of " + exitCode);
 
 });
 
 Task("Default")
-	.IsDependentOn("Test")
-	.Does(() =>
-{
-});
+    .IsDependentOn("Test");
 
 RunTarget(target);
-

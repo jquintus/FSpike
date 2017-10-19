@@ -1,6 +1,7 @@
 ﻿module SimpleTests
 
 open Fuchu
+open Swensen.Unquote.Assertions
 
 let alwaysTrue x = true
 let head array = 
@@ -17,10 +18,12 @@ let tests =
 
 [<Tests>]
 let tests2 =
-    testList "My Simple Tests" [
-        testCase "Arrays" <|
+    testList "Unquote Tests" [
+        testCase "Head returns the first item in the array" <|
             fun _ -> 
-                let myHead = [| 1; 2; 3 |] |> head
-                Assert.Equal("head of [| 1; 2; 3 |]", 1, myHead)
+                test <@ [| 1; 2; 3 |] |> head = 1 @> |> ignore
+        testCase "map applies function to every item in a sequence" <|
+            fun _ ->
+                test <@ ([1; 2; 3; 4] |> List.map ((+) 1)) = [ 2..5 ] @> |> ignore
 
     ]

@@ -1,8 +1,7 @@
 version: 1.0.{build}
 image: Visual Studio 2017
-build:
-  project: .\FSpike.sln
-  verbosity: minimal
+build_script:
+- ps: .\build.ps1
 notifications:
 - provider: GitHubPullRequest
   on_build_success: true

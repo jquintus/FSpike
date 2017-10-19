@@ -2,6 +2,8 @@
 
 open Fuchu
 open Swensen.Unquote.Assertions
+open Swensen.Unquote
+open Swensen.Unquote.Operators
 
 let alwaysTrue x = true
 let head array = 
@@ -26,4 +28,8 @@ let tests2 =
             fun _ ->
                 test <@ ([1; 2; 3; 4] |> List.map ((+) 1)) = [ 2..5 ] @> |> ignore
 
-    ]
+        testCase "Map using the =! operator prints out less than the <@ .. @>" <|
+            fun _ ->
+               ([1; 2; 3; 4;] |> List.map ((+) 1)) =! [ 2..5 ]
+
+]

@@ -5,6 +5,16 @@ open FParsec
 open Swensen.Unquote.Assertions
 open Swensen.Unquote
 
+
+
+
+
+let str s =pstring s
+let floatBetweenBrackets = str "[" >>. pfloat .>> str "]"
+let intAfterGreaterThans = str ">" >>. str ">" >>. pint32
+
+
+
 let startsWith input (s:string) = s.StartsWith(input)
 
 let testParser' p str = 
@@ -33,5 +43,23 @@ let parserTests =
         testCase "Float parsed as float succeeds" <|
             fun _ ->
                 test <@ testParser pfloat "1.24" = Some 1.24 @>
+    ]
 
+[<Tests>]
+let parserTests' = 
+    testList "Parser Float With Brackets" [
+        testCase "Float between brackets succeeds" <|
+            fun _ -> 
+                test <@ testParser floatBetweenBrackets "[1.42]" = Some 1.42 @>
+        testCase "Float without brackets fails" <|
+            fun _ -> 
+                test <@ testParser floatBetweenBrackets "1.42" = None @>
+    ]
+
+[<Tests>]
+let parserTests'' = 
+    testList ">> Int Parser" [
+        testCase ">> 45 returns 45" <|
+            fun _ -> 
+                test <@ testParser intAfterGreaterThans ">>45" = Some 45 @>
     ]

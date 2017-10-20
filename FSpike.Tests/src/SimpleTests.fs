@@ -27,7 +27,6 @@ let tests2 =
         testCase "map applies function to every item in a sequence" <|
             fun _ ->
                 test <@ ([1; 2; 3; 4] |> List.map ((+) 1)) = [ 2..5 ] @> |> ignore
-
         testCase "Map using the =! operator prints out less than the <@ .. @>" <|
             fun _ ->
                ([1; 2; 3; 4;] |> List.map ((+) 1)) =! [ 2..5 ]

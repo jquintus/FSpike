@@ -43,4 +43,4 @@ let additionTestCases = [
 
 [<Tests>]
 let tupledTests =
-    testList "Tests driven from a list of data" (mapTests2 additionTestCases (+))
+    testList "Tests driven from a list of data" (mapTests2 (+) id additionTestCases)

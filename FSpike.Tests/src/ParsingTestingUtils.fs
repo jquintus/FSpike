@@ -9,20 +9,18 @@ open Swensen.Unquote
 let startsWith input (s:string) = s.StartsWith(input)
 let t = testCase
 
-let mapTests2 cases f =
-    cases |> Seq.map (fun case -> 
-        let (testName, param1, param2, expected) = case
-        testCase testName <|
-            fun _ ->
-                test <@ f param1 param2 = expected @>
-        )
-
 let mapTests1 fLeft fRight cases =
     cases |> Seq.map (fun case -> 
         let (testName, input, expected) = case
-        testCase testName <|
-            fun _ ->
+        testCase testName <| fun _ ->
                 test <@ fLeft input = fRight expected @>
+        )
+
+let mapTests2 fLeft fRight cases=
+    cases |> Seq.map (fun case -> 
+        let (testName, param1, param2, expected) = case
+        testCase testName <| fun _ ->
+                test <@ fLeft param1 param2 = fRight expected @>
         )
 
 // Parsing

@@ -1,4 +1,8 @@
 ﻿module SimpleTests
+// Getting my feet wet with testing in F#
+// Specifically:
+//          Fuchu
+//          Unquote
 
 open Fuchu
 open Swensen.Unquote.Assertions

@@ -57,10 +57,10 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="src\SimpleTests.fs" />
     <Compile Include="src\ParsingTestingUtils.fs" />
     <Compile Include="src\NumberParsers.fs" />
     <Compile Include="src\StringParsers.fs" />
-    <Compile Include="src\SimpleTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

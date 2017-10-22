@@ -6,6 +6,9 @@ open Swensen.Unquote.Assertions
 open Swensen.Unquote
 open FParsec
 
+// Helpers
+let identity x = x
+
 // Simple parsers
 let float_ws = pfloat .>> ws
 
@@ -16,23 +19,15 @@ let manyFloats = many floatBetweenBrackets
 let manyFloatsSeperatedByCommas = many (str ">") >>. sepBy floatBetweenBrackets (str ", ")
 let numberList = str_ws "[" >>. sepBy float_ws (str_ws ",") .>> str_ws "]"
 
+// -----------------------------------------------------------------------
+let pfloatTests = [
+        ("int parsed as float succeeds",      "1",           Some 1.0 )
+        ("non number parsed as float fails",  "Hello world", None )
+        ("float parsed as float succeeds",    "1.24",        Some 1.24) ]
+
 [<Tests>]
-let parserTests = 
-    testList "Parser Tests" [
-        t "int parsed as float succeeds" <|
-            fun _ ->
-                getSuccessResult pfloat "1" =! Some 1.0
-                ()
-
-        t "non number parsed as float fails" <|
-            fun _ ->
-                getSuccessResult pfloat "hello world" =! None
-                ()
-
-        t "Float parsed as float succeeds" <|
-            fun _ ->
-                test <@ getSuccessResult pfloat "1.24" = Some 1.24 @>
-    ]
+let pfloatTests' = 
+    testList "pfloat Tests" (mapTests1 (getSuccessResult pfloat) id pfloatTests)
 
 [<Tests>]
 let parserTests' = 

@@ -63,6 +63,7 @@
     <Compile Include="src\StringParsers.fs" />
     <Compile Include="src\JsonParser.fs" />
     <Compile Include="src\JsonTester.fs" />
+    <None Include="scripts\ParsingScript.fsx" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,11 @@ let startsWith input (s:string) = s.StartsWith(input)
 let t = testCase
 
 // Parsing
+let str s = pstring s
+let ws = spaces
+let str_ws s = str s .>> ws
+let ws_str_ws s = ws >>. str s .>> ws
+
 let testParser' p str = 
     match run p str with
     | Success(result, _, _)   -> printfn "Success: %A" result

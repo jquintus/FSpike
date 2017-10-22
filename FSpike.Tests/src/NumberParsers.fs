@@ -7,10 +7,6 @@ open Swensen.Unquote
 open FParsec
 
 // Simple parsers
-let str s = pstring s
-let ws = spaces
-let str_ws s = str s .>> ws
-let ws_str_ws s = ws >>. str s .>> ws
 let float_ws = pfloat .>> ws
 
 // Complex parsers

@@ -6,14 +6,9 @@ open Fuchu
 open Swensen.Unquote.Assertions
 open Swensen.Unquote
 open FParsec
-open NumberParsers
 
 // Types
 type StringConstant = StringConstant of string * string
-
-// Simple parsers
-let str s = pstring s
-let ws = spaces
 
 // Parsers
 let quoteParser = (pstring "\"")

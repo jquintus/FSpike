@@ -46,6 +46,11 @@ let testInput = [
                                                                             JBool(true)
                                                                             JBool(false) ]))
                                                         ] )
+    ("Objects in objects Parse", 
+                        @"{ ""root"" : { ""child"" : 4.2 } }",
+                                                     MapJObject [
+                                                        ("root", MapJObject ["child", JNumber(4.2)])
+                                                        ] )
 ]
 
 [<Tests>]

@@ -17,6 +17,14 @@ let mapTests2 cases f =
                 test <@ f param1 param2 = expected @>
         )
 
+let mapTests1 fLeft fRight cases =
+    cases |> Seq.map (fun case -> 
+        let (testName, input, expected) = case
+        testCase testName <|
+            fun _ ->
+                test <@ fLeft input = fRight expected @>
+        )
+
 // Parsing
 let str s = pstring s
 let ws = spaces

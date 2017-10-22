@@ -15,49 +15,27 @@ let testJson' input =
     test <@ result = "dummy" @>
 
 
+let mapJsonTests = mapTests1 (getSuccessResult json) Some
+
+let testInput = [
+    ("True Parses",    @"{ ""Key"" : true }",        JObject (Map [("Key", JBool(true))]) )
+    ("False Parses",   @"{ ""Key"" : false }",       JObject (Map [("Key", JBool(false))]) )
+                                                     
+    ("Null Parses",    @"{ ""Key"" : null }",        JObject (Map [("Key", JNull)]) )
+                                                     
+    ("int Parses",     @"{ ""Key"" : 42 }",          JObject (Map [("Key", JNumber (42.0))]) )
+    ("float Parses",   @"{ ""Key"" : 4.2 }",         JObject (Map [("Key", JNumber (4.2))]) )
+
+    ("String Parses",  @"{ ""Key"" : ""hello"" }",   JObject (Map [("Key", JString("hello"))]) )
+]
+
+[<Tests>]
+let parserTests' = 
+    testList "JSON Parser" ( mapJsonTests testInput )
+
 [<Tests>]
 let parserTests = 
     testList "JSON Parser" [
-        t "True parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : true }"
-                let expected = JObject (Map [("Key", JBool(true))])
-
-                testJson input expected
-
-        t "False parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : false }"
-                let expected = JObject (Map [("Key", JBool(false))])
-
-                testJson input expected
-
-        t "int parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : 42 }"
-                let expected = JObject (Map [("Key", JNumber(42.0))])
-
-                testJson input expected
-        t "float parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : 4.2 }"
-                let expected = JObject (Map [("Key", JNumber(4.2))])
-
-                testJson input expected
-
-        t "string parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : ""hello"" }"
-                let expected = JObject (Map [("Key", JString("hello"))])
-
-                testJson input expected
-
-        t "null parses" <|
-            fun _ -> 
-                let input = @"{ ""Key"" : null }"
-                let expected = JObject (Map [("Key", JNull)])
-
-                testJson input expected
 
         //t "list parses" <|
         //    fun _ -> 

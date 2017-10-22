@@ -10,6 +10,7 @@ open FParsec
 let str s = pstring s
 let ws = spaces
 let str_ws s = str s .>> ws
+let ws_str_ws s = ws >>. str s .>> ws
 let float_ws = pfloat .>> ws
 
 // Complex parsers
@@ -80,4 +81,8 @@ let parserTests'' =
         t ">> 45 returns 45" <|
             fun _ -> 
                 test <@ getSuccessResult intAfterGreaterThans ">>45" = Some 45 @>
+        t "Doing math in the parser" <|
+            fun _ ->
+                let parser = pipe3 pint32 (ws_str_ws "+") pint32 (fun a _ b -> a + b)
+                test <@ getSuccessResult parser "2 + 3" = Some 5 @>
     ]

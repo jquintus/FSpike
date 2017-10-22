@@ -13,10 +13,15 @@ let ws = spaces
 let str_ws s = str s .>> ws
 let ws_str_ws s = ws >>. str s .>> ws
 
-let testParser' p str = 
+let testParser p str = 
     match run p str with
     | Success(result, _, _)   -> printfn "Success: %A" result
     | Failure(errorMsg, _, _) -> printfn "Error: %A" errorMsg
+
+let result2Str result =
+    match result with
+    | Success(result, _, _)   -> sprintf "%A" result
+    | Failure(errorMsg, _, _) -> sprintf "%A" errorMsg
 
 let getSuccessResult p str = 
     match run p str with

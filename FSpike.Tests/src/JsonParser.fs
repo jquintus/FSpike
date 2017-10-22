@@ -1,10 +1,6 @@
 ﻿module JsonParser
 // http://www.quanttec.com/fparsec/tutorial.html#parsing-json
 
-open ParsingTestingUtils
-open Fuchu
-open Swensen.Unquote.Assertions
-open Swensen.Unquote
 open FParsec
 
 // Types
@@ -16,6 +12,10 @@ type Json =
     | JList of Json list
     | JObject of Map<string, Json>
 
+// helpers
+let str s = pstring s
+
+// Parsers
 let jnull = stringReturn "null" JNull
 let jbool =     (stringReturn "true"  (JBool true))
             <|> (stringReturn "false" (JBool false))

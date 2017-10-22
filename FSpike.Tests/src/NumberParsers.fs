@@ -4,7 +4,9 @@ open ParsingTestingUtils
 open Fuchu
 open FParsec
 
+// -----------------------------------------------------------------------
 // Parsers
+// -----------------------------------------------------------------------
 let float_ws = pfloat .>> ws
 let floatBetweenBrackets = str "[" >>. pfloat .>> str "]"
 let intAfterGreaterThans = str ">" >>. str ">" >>. pint32
@@ -51,11 +53,9 @@ let listParserTests = [
 // -----------------------------------------------------------------------
 // Run The Tests
 // -----------------------------------------------------------------------
-
 let tests = Seq.concat [ (mapTests2 getSuccessResult id floatParserTests) 
                          (mapTests2 getSuccessResult id intParserTests)
                          (mapTests2 getSuccessResult id listParserTests)
                         ]
-[<Tests>]
-let parserTests =
-    testList "Parser Tests" tests
+
+[<Tests>] let parserTests = testList "Parser Tests" tests

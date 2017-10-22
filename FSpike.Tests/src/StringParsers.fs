@@ -11,7 +11,18 @@ open FParsec
 let str s = pstring s
 let ws = spaces
 
-// helpers 
+// Parsers
+let stringLiteral s = 
+    let normalChar = satisfy (fun c -> c <> '\\' && c <> '"')
+    let unescape c = match c with
+                     | 'n' -> '\n'
+                     | 'r' -> '\r'
+                     | 't' -> '\t'
+                     | c -> c
+    let escapedChar = pstring "\\" >>. (anyOf "\\nrt\"" |>> unescape)
+    let quoteParser = (pstring "\"")
+    let stringLiteralParser = manyChars (normalChar <|> escapedChar)
+    between quoteParser quoteParser stringLiteralParser s
 
 [<Tests>]
 let parserTests = 
@@ -42,4 +53,11 @@ let parserTests =
                 let expected = [ "a"; "A";  ]
 
                 test <@ getSuccessResult parser "baBA" = Some expected @>
+
+        t "String literal" <|
+            fun _ ->
+                test <@ getSuccessResult stringLiteral "\"hello world\"" = Some "hello world" @>
+        t "String literal missing closing quote" <|
+            fun _ ->
+                test <@ getSuccessResult stringLiteral "\"hello world" = None @>
     ]

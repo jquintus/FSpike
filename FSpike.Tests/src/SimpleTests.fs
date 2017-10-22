@@ -7,7 +7,7 @@
 open Fuchu
 open Swensen.Unquote.Assertions
 open Swensen.Unquote
-open Swensen.Unquote.Operators
+open ParsingTestingUtils
 
 let alwaysTrue x = true
 let head array = 
@@ -34,5 +34,13 @@ let tests2 =
         testCase "Map using the =! operator prints out less than the <@ .. @>" <|
             fun _ ->
                ([1; 2; 3; 4;] |> List.map ((+) 1)) =! [ 2..5 ]
-
 ]
+
+let additionTestCases = [
+    ( "Two plus two", 2, 2, 4 )
+    ( "Ten plus 5", 10, 5, 15 )
+]
+
+[<Tests>]
+let tupledTests =
+    testList "Tests driven from a list of data" (mapTests2 additionTestCases (+))

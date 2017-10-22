@@ -2,10 +2,20 @@
 
 open Fuchu
 open FParsec
+open Swensen.Unquote.Assertions
+open Swensen.Unquote
 
 // Testing 
 let startsWith input (s:string) = s.StartsWith(input)
 let t = testCase
+
+let mapTests2 cases f =
+    cases |> Seq.map (fun case -> 
+        let (testName, param1, param2, expected) = case
+        testCase testName <|
+            fun _ ->
+                test <@ f param1 param2 = expected @>
+        )
 
 // Parsing
 let str s = pstring s

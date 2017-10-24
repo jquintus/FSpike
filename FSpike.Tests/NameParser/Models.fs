@@ -23,12 +23,12 @@ let format name =
 module Tests =
     open Fuchu
 
-    let josh = createName3 "Josh" "Paul" "Quintus"
+    let josh = createName3 "Joshua" "Paul" "Quintus"
     let ksenia = createName2 "Ksenia" "Winnicki"
     
     let nameFormatingTestCases =    
         [ 
-            ( "Josh", josh, "Josh Paul Quintus") 
+            ( "Josh", josh, "Joshua Paul Quintus") 
             ("Ksenia", ksenia, "Ksenia Winnicki") 
         ]
     [<Tests>]

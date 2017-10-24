@@ -1,4 +1,5 @@
-﻿module ParsingTestingUtils
+﻿[<AutoOpen>]
+module ParsingTestingUtils
 
 open Fuchu
 open FParsec

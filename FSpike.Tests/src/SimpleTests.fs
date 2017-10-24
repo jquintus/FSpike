@@ -7,7 +7,6 @@
 open Fuchu
 open Swensen.Unquote.Assertions
 open Swensen.Unquote
-open ParsingTestingUtils
 
 let alwaysTrue x = true
 let head array = 

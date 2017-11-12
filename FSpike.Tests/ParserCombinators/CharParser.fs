@@ -170,12 +170,15 @@ module Section_6 =
                     Success (newValue, remaining2)
 
         Parser innerFn
-
+    
     let ( .>>. ) = andThen
 
+    // val parseA: Parser<char>
     let parseA = pchar 'A'
+    // val parseB: Parser<char>
     let parseB = pchar 'B'
 
+    // val parseAB: Parser<char * char>
     let parseAB = parseA .>>. parseB
 
     let testCases = [
@@ -187,13 +190,44 @@ module Section_6 =
         ("run parseAB \"\"",     parseAB, "",     Failure "No more input")
     ]
 
-    // val run: Parser<'a> -> string -> Result<'a * string>
-    let run parser input = 
-        // unwrwap the parser to get to the inner function
-        let (Parser innerFn) = parser
-        innerFn input
-
     let foo = run parseAB "AB"
+
+module Section_7 = 
+    // =============================================
+    // Section 6 - Choosing between two parsers: the “or else” combinator
+    // =============================================
+    open Result
+    open Section_5
+
+    let orElse parser1 parser2 = 
+        let innerFn str =
+            let result1 = run parser1 str
+            match result1 with
+            | Success _ -> 
+                result1
+            | Failure _ -> 
+                let result2 = run parser2 str
+                result2
+        Parser innerFn
+
+    let ( <!> ) = orElse
+        
+    // val parseA: Parser<char>
+    let parseA = pchar 'A'
+    // val parseB: Parser<char>
+    let parseB = pchar 'B'
+
+    // val parseAB: Parser<char>
+    let parseAB = parseA <!> parseB
+
+    let testCases = [
+    //   Test Name                     Parser   str     Expected result
+        ("run parse A <!> B \"AB\"",   parseAB, "A",    Success ('A', ""))
+        ("run parse A <!> B \"AB\"",   parseAB, "AB",   Success ('A', "B"))
+        ("run parse A <!> B \"ABC\"",  parseAB, "BC",   Success ('B', "C"))
+        ("run parse A <!> B \"AC\"",   parseAB, "CD",   Failure "Expecting B but found C")
+        ("run parse A <!> B \"\"",     parseAB, "",     Failure "No more input")
+    ]
 
 module Tests = 
     // -----------------------------------------------------------------------
@@ -204,7 +238,8 @@ module Tests =
                              (mapTests2 Section_3.pchar    id Section_3.testCases)
                              (mapTests2 Section_4.pchar    id Section_3.testCases)
                              (mapTests2 Section_5.run      id Section_5.testCases)
-                             (mapTests2 Section_6.run      id Section_6.testCases)
+                             (mapTests2 Section_5.run      id Section_6.testCases)
+                             (mapTests2 Section_5.run      id Section_7.testCases)
                             ]
 
     [<Tests>] let parserTests = testList "Char Parser Tests" tests

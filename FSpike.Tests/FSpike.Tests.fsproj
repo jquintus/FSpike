@@ -64,6 +64,9 @@
     <Compile Include="src\JsonParser.fs" />
     <Compile Include="src\JsonTester.fs" />
     <None Include="scripts\ParsingScript.fsx" />
+    <None Include="ParserCombinators\README.md" />
+    <Compile Include="ParserCombinators\CharParser.fs" />
+    <None Include="ParserCombinators\Parser.fsx" />
     <Compile Include="NameParser\Models.fs" />
     <Compile Include="NameParser\NameParser.fs" />
     <Compile Include="Program.fs" />

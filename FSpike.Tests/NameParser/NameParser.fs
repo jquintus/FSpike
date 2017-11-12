@@ -38,9 +38,9 @@ module Tests =
                   test <@ getSuccessResult duoNameParser "Ksenia Winnicki" = (createName2 "Ksenia" "Winnicki" |> Some) @>
 
             // =========================================
-            testCase "allNameParser on 'Josh Paul Quintus' succeeds" <|
-                fun _ -> 
-                  test <@ getSuccessResult allNameParser "Josh Paul Quintus" = (createName3 "Josh" "Paul" "Quintus" |> Some) @>
+            //testCase "allNameParser on 'Josh Paul Quintus' succeeds" <|
+            //    fun _ -> 
+            //      test <@ getSuccessResult allNameParser "Josh Paul Quintus" = (createName3 "Josh" "Paul" "Quintus" |> Some) @>
             testCase "allNameParser on 'Ksenia Winnicki' succeeds" <|
                 fun _ -> 
                   test <@ getSuccessResult allNameParser "Ksenia Winnicki" = (createName2 "Ksenia" "Winnicki" |> Some) @>

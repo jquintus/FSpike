@@ -17,6 +17,7 @@ let ws = spaces
 
 let triNameParser = pipe3 (pname .>> ws) (pname .>> ws) (pname) (fun f m l -> createName3 f m l)
 let duoNameParser = pipe2 (pname .>> ws) pname (fun f l -> createName2 f l)
+let allNameParser = choice [ duoNameParser; triNameParser  ] 
 
 module Tests =
     open ParsingTestingUtils
@@ -35,4 +36,12 @@ module Tests =
             testCase "duoNameParser on 'Ksenia Winnicki' succeeds" <|
                 fun _ -> 
                   test <@ getSuccessResult duoNameParser "Ksenia Winnicki" = (createName2 "Ksenia" "Winnicki" |> Some) @>
+
+            // =========================================
+            testCase "allNameParser on 'Josh Paul Quintus' succeeds" <|
+                fun _ -> 
+                  test <@ getSuccessResult allNameParser "Josh Paul Quintus" = (createName3 "Josh" "Paul" "Quintus" |> Some) @>
+            testCase "allNameParser on 'Ksenia Winnicki' succeeds" <|
+                fun _ -> 
+                  test <@ getSuccessResult allNameParser "Ksenia Winnicki" = (createName2 "Ksenia" "Winnicki" |> Some) @>
         ]

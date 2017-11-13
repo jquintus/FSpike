@@ -11,8 +11,7 @@ let startsWith input (s:string) = s.StartsWith(input)
 let t = testCase
 
 let mapTests1 fLeft fRight cases =
-    cases |> Seq.map (fun case -> 
-        let (testName, input, expected) = case
+    cases |> Seq.map (fun (testName, input, expected) -> 
         testCase testName <| fun _ ->
                 test <@ fLeft input = fRight expected @>
         )
@@ -24,6 +23,12 @@ let mapTests2 fLeft fRight cases=
                 test <@ fLeft param1 param2 = fRight expected @>
         )
 
+let mapTests3 fLeft fRight cases = 
+    cases |> Seq.map (fun (testName, param1, param2, param3, expected) ->
+        testCase testName <| fun _ ->
+            test <@ fLeft param1 param2 param3 = fRight expected @>
+        )
+   
 // Parsing
 let str s = pstring s
 let ws = spaces

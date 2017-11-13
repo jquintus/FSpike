@@ -169,10 +169,6 @@ module Section_2  =
     // =============================================
     open StartingPoint
     open Section_1
-    open Fuchu
-    open Swensen.Unquote.Assertions
-    open Swensen.Unquote
-
 
     // val returnP: 'a -> Parser<'a>
     let returnP x =

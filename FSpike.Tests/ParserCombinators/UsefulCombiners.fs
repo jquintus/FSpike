@@ -1,5 +1,8 @@
 ﻿module UsefulCombiners
 open System
+open Fuchu
+open Swensen.Unquote.Assertions
+open Swensen.Unquote
 
 module StartingPoint =
     /// Type that represents Success/Failure in parsing
@@ -146,17 +149,19 @@ module Section_1  =
         parse3DigitsAsStr
         |>> fun str -> int str
 
-
-    let testCases1 = [
-        ("parseThreeDigits 911A",  parseThreeDigits,  "911A", Success ((('9', '1'), '1'), "A"))
-    ]
-    let testCases2 = [
-        ("parse3DigitsAsStr 911A",  parse3DigitsAsStr,  "911A", Success ("911", "A"))
-        ("parse3DigitsAsStr' 911A", parse3DigitsAsStr', "911A", Success ("911", "A"))
-    ]
-    let testCases3 = [
-        ("parse3DigitsAsInt 911A",  parse3DigitsAsInt,  "911A", Success (911, "A"))
-    ]
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "parseThreeDigits 911A" <| fun _ ->
+                test <@ run parseThreeDigits  "911A" = Success ((('9', '1'), '1'), "A") @>
+            testCase "parse3DigitsAsStr 911A" <| fun _ ->
+                test <@ run parse3DigitsAsStr "911A" = Success ("911", "A") @>
+            testCase "parse3DigitsAsStr' 911A" <| fun _ ->
+                test <@ run parse3DigitsAsStr' "911A" =  Success ("911", "A") @>
+            testCase "parse3DigitsAsInt 911A" <| fun _ -> 
+                test <@ run parse3DigitsAsInt "911A" = Success (911, "A") @>
+        ]
 
 module Section_2  =
     // =============================================
@@ -231,13 +236,8 @@ module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
     // -----------------------------------------------------------------------
-    open Fuchu
-    open StartingPoint
-
     let tests = Seq.concat [
-                 (mapTests2 run id Section_1.testCases1)
-                 (mapTests2 run id Section_1.testCases2)
-                 (mapTests2 run id Section_1.testCases3)
+                 Seq.ofList Section_1.testCases
                  Seq.ofList Section_2.testCases
     ]
 

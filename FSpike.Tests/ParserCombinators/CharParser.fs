@@ -1,9 +1,8 @@
 ﻿module CharParser
+
 open System
 open Fuchu
-
-module Result = 
-    type Result<'a> = 
+type Result<'a> = 
         | Success of 'a
         | Failure of string
 
@@ -64,8 +63,6 @@ module Section_3 =
     // -----------------------------------------------------------------------
     // Returning a Success/Failure
     // -----------------------------------------------------------------------
-    open Result
-
     // val pchar : char -> string -> Result<char * string>
     let pchar charToMatch str =
         if String.IsNullOrEmpty(str) then
@@ -91,8 +88,6 @@ module Section_3 =
     // -----------------------------------------------------------------------
     // Currying
     // -----------------------------------------------------------------------
-    open Result
-
     // val pchar : charToMatch:char -> (string -> Result<char * string>)
     let pchar charToMatch = 
         let innerFn str = 
@@ -112,7 +107,6 @@ module Section_5 =
     // -----------------------------------------------------------------------
     // Encapsulating the parsing function in a type
     // -----------------------------------------------------------------------
-    open Result
     type Parser<'T> = Parser of (string -> Result<'T * string>)
 
     // val pchar: char -> Parser<char>
@@ -152,7 +146,6 @@ module Section_6 =
     // =============================================
     // Section 6 - Combining two parsers in sequence: the "and then" combinator
     // =============================================
-    open Result
     open Section_5
 
     // val andThen -> Parser<'a> -> Parser<'b> -> Parser<'a * 'b>
@@ -194,9 +187,8 @@ module Section_6 =
 
 module Section_7 = 
     // =============================================
-    // Section 6 - Choosing between two parsers: the “or else” combinator
+    // Section 7 - Choosing between two parsers: the “or else” combinator
     // =============================================
-    open Result
     open Section_5
 
     let orElse parser1 parser2 = 
@@ -229,6 +221,29 @@ module Section_7 =
         ("run parse A <!> B \"\"",     parseAB, "",     Failure "No more input")
     ]
 
+module Section_8 =
+    // =============================================
+    // Section 8 - Combining Parsers
+    // =============================================
+    open Section_5
+    open Section_6
+    open Section_7
+
+    let parseC = pchar 'C'
+
+    let borElseC = parseB <!> parseC
+    let andThenBorC = parseA .>>. borElseC
+
+    let testCases = [
+    //   Test Name                  Parser        str     Expected result
+        ("run andThenBorC \"ABZ\"", andThenBorC, "ABZ",   Success (('A', 'B'), "Z"))
+        ("run andThenBorC \"ACZ\"", andThenBorC, "ACZ",   Success (('A', 'C'), "Z"))
+        ("run andThenBorC \"AC\"",  andThenBorC, "AC",    Success (('A', 'C'), ""))
+        ("run andThenBorC \"QBZ\"", andThenBorC, "QBZ",   Failure "Expecting A but found Q")
+        ("run andThenBorC \"AQZ\"", andThenBorC, "AQZ",   Failure "Expecting C but found Q")
+        ("run andThenBorC \"\"",    andThenBorC,  "",     Failure "No more input")
+    ]
+
 module Tests = 
     // -----------------------------------------------------------------------
     // Run The Tests
@@ -240,6 +255,7 @@ module Tests =
                              (mapTests2 Section_5.run      id Section_5.testCases)
                              (mapTests2 Section_5.run      id Section_6.testCases)
                              (mapTests2 Section_5.run      id Section_7.testCases)
+                             (mapTests2 Section_5.run      id Section_8.testCases)
                             ]
 
     [<Tests>] let parserTests = testList "Char Parser Tests" tests

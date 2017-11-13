@@ -244,6 +244,39 @@ module Section_8 =
         ("run andThenBorC \"\"",    andThenBorC,  "",     Failure "No more input")
     ]
 
+module Section_9 = 
+    // =============================================
+    // Section 9 - Choice
+    // =============================================
+    open Section_5
+    open Section_6
+    open Section_7
+
+    // val choice: Parser<'a> list -> Parser<'a>
+    let choice listOfParsers = 
+        List.reduce ( <!> ) listOfParsers
+
+    // val anyOf: char list -> Parser<char>
+    let anyOf listOfChars =
+        listOfChars 
+        |> List.map pchar
+        |> choice
+    
+    let parserLower = anyOf ['a'..'z']
+    let parseDigit = anyOf ['0'..'9']
+
+    let testCases = [
+    //   Test Name                  Parser       str     Expected result
+        ("run parserLower \"a\"",   parserLower, "a",    Success ('a', ""))
+        ("run parserLower \"dE\"",  parserLower, "dE",   Success ('d', "E"))
+        ("run parserLower \"A\"",   parserLower, "A",    Failure "Expecting z but found A")
+        ("run parserLower \"\"",    parserLower,  "",    Failure "No more input")
+        ("run parseDigit \"1AB\"",  parseDigit,  "1AB",  Success ('1', "AB"))
+        ("run parseDigit \"9AB\"",  parseDigit,  "9AB",  Success ('9', "AB"))
+        ("run parseDigit \"*9\"",   parseDigit,  "*9",   Failure "Expecting 9 but found *")
+        ("run parseDigit \"\"",     parseDigit,   "",    Failure "No more input")
+    ]
+
 module Tests = 
     // -----------------------------------------------------------------------
     // Run The Tests
@@ -256,6 +289,7 @@ module Tests =
                              (mapTests2 Section_5.run      id Section_6.testCases)
                              (mapTests2 Section_5.run      id Section_7.testCases)
                              (mapTests2 Section_5.run      id Section_8.testCases)
+                             (mapTests2 Section_5.run      id Section_9.testCases)
                             ]
 
     [<Tests>] let parserTests = testList "Char Parser Tests" tests

@@ -1,7 +1,6 @@
 ﻿module CharParser
 
 open System
-open Fuchu
 type Result<'a> = 
         | Success of 'a
         | Failure of string
@@ -202,7 +201,7 @@ module Section_7 =
                 result2
         Parser innerFn
 
-    let ( <!> ) = orElse
+    let ( <|> ) = orElse
         
     // val parseA: Parser<char>
     let parseA = pchar 'A'
@@ -210,15 +209,15 @@ module Section_7 =
     let parseB = pchar 'B'
 
     // val parseAB: Parser<char>
-    let parseAB = parseA <!> parseB
+    let parseAB = parseA <|> parseB
 
     let testCases = [
     //   Test Name                     Parser   str     Expected result
-        ("run parse A <!> B \"AB\"",   parseAB, "A",    Success ('A', ""))
-        ("run parse A <!> B \"AB\"",   parseAB, "AB",   Success ('A', "B"))
-        ("run parse A <!> B \"ABC\"",  parseAB, "BC",   Success ('B', "C"))
-        ("run parse A <!> B \"AC\"",   parseAB, "CD",   Failure "Expecting B but found C")
-        ("run parse A <!> B \"\"",     parseAB, "",     Failure "No more input")
+        ("run parse A <|> B \"AB\"",   parseAB, "A",    Success ('A', ""))
+        ("run parse A <|> B \"AB\"",   parseAB, "AB",   Success ('A', "B"))
+        ("run parse A <|> B \"ABC\"",  parseAB, "BC",   Success ('B', "C"))
+        ("run parse A <|> B \"AC\"",   parseAB, "CD",   Failure "Expecting B but found C")
+        ("run parse A <|> B \"\"",     parseAB, "",     Failure "No more input")
     ]
 
 module Section_8 =
@@ -231,7 +230,7 @@ module Section_8 =
 
     let parseC = pchar 'C'
 
-    let borElseC = parseB <!> parseC
+    let borElseC = parseB <|> parseC
     let andThenBorC = parseA .>>. borElseC
 
     let testCases = [
@@ -254,7 +253,7 @@ module Section_9 =
 
     // val choice: Parser<'a> list -> Parser<'a>
     let choice listOfParsers = 
-        List.reduce ( <!> ) listOfParsers
+        List.reduce ( <|> ) listOfParsers
 
     // val anyOf: char list -> Parser<char>
     let anyOf listOfChars =
@@ -281,6 +280,7 @@ module Tests =
     // -----------------------------------------------------------------------
     // Run The Tests
     // -----------------------------------------------------------------------
+    open Fuchu
     let tests = Seq.concat [ (mapTests1 Section_1.A_Parser id Section_1.testCases) 
                              (mapTests2 Section_2.pchar    id Section_2.testCases)
                              (mapTests2 Section_3.pchar    id Section_3.testCases)

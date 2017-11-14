@@ -275,18 +275,78 @@ module Section_3  =
 
  module Section_4  =
     // =============================================
-    // Section 4 - 
+    // Section 4 - many and many1
     // =============================================
     open StartingPoint
     open Section_1
     open Section_2
+    open Section_3
+
+    // val parseZeroOrMore: Parser<'a> -> 'a list * string
+    let rec parseZeroOrMore parser input = 
+        let firstResult = run parser input
+        match firstResult with
+        | Failure _ ->
+            ([], input)
+        | Success (firstValue, inputAfterFirstParse) -> 
+            let (subsequentValues, remainingInput) = 
+                parseZeroOrMore parser inputAfterFirstParse
+            let values = firstValue::subsequentValues
+            (values, remainingInput)
+    
+    // val many: Parser<'a> -> Parser<'a list>
+    let many parser =
+        let innerFn input =
+            Success (parseZeroOrMore parser input)
+        Parser innerFn
+    
+    // val many1: Parser<'a> -> Parser<'a list>
+    let many1 parser =
+        let innerFn input =
+            let firstResult = run parser input
+            match firstResult with
+            | Failure err -> 
+                Failure err
+            | Success (firstValue, inputAfterFirstParse) -> 
+                let (subsequentValues, remainingInput) = 
+                    parseZeroOrMore parser inputAfterFirstParse
+                let values = firstValue::subsequentValues
+                Success (values, remainingInput)
+        Parser innerFn
+
     // ----------------------------------------------------------------
     let run = StartingPoint.run
-    let testCases  = 
-        [
-            testCase "Section 4" <| fun _ ->
-                test <@ true = true @>
-        ]
+
+    let manyA = many (pchar 'A')
+    let manyAB = many (pstring "AB")
+    let ws = many (anyOf [' '; '\t'; '\n'])
+    let digits = many1 (anyOf ['0'..'9'])
+    let pint = 
+        let resultToInt digitList = 
+            String(List.toArray digitList) |> int
+        digits |>> resultToInt
+
+    let testCases = [
+    //   Test Name           Parser  str      Expected result
+        ("run manyA ABC",    manyA,  "ABC",    Success (['A'], "BC"))
+        ("run manyA AAC",    manyA,  "AAC",    Success (['A'; 'A'], "C"))
+        ("run manyA AAA",    manyA,  "AAA",    Success (['A'; 'A'; 'A'], ""))
+        ("run manyA BBC",    manyA,  "BBC",    Success ([], "BBC"))
+        ("run manyA ''" ,    manyA,  ""   ,    Success ([], ""))
+        ("run ws 'ABC'",     ws,     "ABC",    Success ([], "ABC"))
+        ("run ws ' ABC'",    ws,     " ABC",   Success ([' '], "ABC"))
+        ("run ws '\\t AB'",  ws,     "\t AB",  Success (['\t'; ' '], "AB"))
+        ("run digits 123",   digits, "123",    Success (['1'; '2'; '3'], ""))
+        ("run digits 1AB",   digits, "1AB",    Success (['1'], "AB"))
+        ("run digits AB",    digits, "AB",     Failure ("Expecting '9'. Got 'A'"))
+    ]
+
+    let pintTestCases = [
+        ("run pint 123", pint, "123",  Success(123, ""))
+        ("run pint 12A", pint, "12A",  Success(12, "A"))
+        ("run pint ''",  pint, "",     Failure("No more input"))
+        ("run pint ABC", pint, "ABC",  Failure ("Expecting '9'. Got 'A'"))
+    ]
 
  module Section_5  =
     // =============================================
@@ -295,6 +355,9 @@ module Section_3  =
     open StartingPoint
     open Section_1
     open Section_2
+    open Section_3
+    open Section_4
+
     // ----------------------------------------------------------------
     let run = StartingPoint.run
     let testCases  = 
@@ -310,6 +373,9 @@ module Section_3  =
     open StartingPoint
     open Section_1
     open Section_2
+    open Section_3
+    open Section_4
+    open Section_5
     // ----------------------------------------------------------------
     let run = StartingPoint.run
     let testCases  = 
@@ -325,6 +391,10 @@ module Section_3  =
     open StartingPoint
     open Section_1
     open Section_2
+    open Section_3
+    open Section_4
+    open Section_5
+    open Section_6
     // ----------------------------------------------------------------
     let run = StartingPoint.run
     let testCases  = 
@@ -337,14 +407,15 @@ module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
     // -----------------------------------------------------------------------
-    let tests = List.concat [
-                 Section_1.testCases
-                 Section_2.testCases
-                 Section_3.testCases
-                 Section_4.testCases
-                 Section_5.testCases
-                 Section_6.testCases
-                 Section_7.testCases
+    let tests = Seq.concat [
+                 Seq.ofList Section_1.testCases
+                 Seq.ofList Section_2.testCases
+                 Seq.ofList Section_3.testCases
+                 (mapTests2 Section_4.run id Section_4.testCases)
+                 (mapTests2 Section_4.run id Section_4.pintTestCases)
+                 Seq.ofList Section_5.testCases
+                 Seq.ofList Section_6.testCases
+                 Seq.ofList Section_7.testCases
     ]
 
     [<Tests>] let parserTests = testList "UsefulCombiners" tests

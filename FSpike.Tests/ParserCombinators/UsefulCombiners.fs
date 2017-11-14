@@ -273,6 +273,66 @@ module Section_3  =
                 test <@ run parseABC "AB|C" =  Failure "Expecting 'C'. Got '|'" @>
        ]
 
+ module Section_4  =
+    // =============================================
+    // Section 4 - 
+    // =============================================
+    open StartingPoint
+    open Section_1
+    open Section_2
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "Section 4" <| fun _ ->
+                test <@ true = true @>
+        ]
+
+ module Section_5  =
+    // =============================================
+    // Section 5 - 
+    // =============================================
+    open StartingPoint
+    open Section_1
+    open Section_2
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "Section 5" <| fun _ ->
+                test <@ true = true @>
+        ]
+
+ module Section_6  =
+    // =============================================
+    // Section 6 - 
+    // =============================================
+    open StartingPoint
+    open Section_1
+    open Section_2
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "Section 6" <| fun _ ->
+                test <@ true = true @>
+        ]
+
+ module Section_7  =
+    // =============================================
+    // Section 7 - 
+    // =============================================
+    open StartingPoint
+    open Section_1
+    open Section_2
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "Section 7" <| fun _ ->
+                test <@ true = true @>
+        ]
+
 module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
@@ -281,6 +341,10 @@ module Test =
                  Section_1.testCases
                  Section_2.testCases
                  Section_3.testCases
+                 Section_4.testCases
+                 Section_5.testCases
+                 Section_6.testCases
+                 Section_7.testCases
     ]
 
     [<Tests>] let parserTests = testList "UsefulCombiners" tests

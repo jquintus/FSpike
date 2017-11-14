@@ -1,4 +1,5 @@
 ﻿module UsefulCombiners
+// https://fsharpforfunandprofit.com/posts/understanding-parser-combinators-2/
 open System
 open Fuchu
 open Swensen.Unquote.Assertions
@@ -446,7 +447,7 @@ module Section_3  =
 
  module Section_7  =
     // =============================================
-    // Section 7 - 
+    // Section 7 - Parsing lists with separators
     // =============================================
     open StartingPoint
     open Section_1
@@ -455,27 +456,72 @@ module Section_3  =
     open Section_4
     open Section_5
     open Section_6
+
+    // val sepBy1: Parser<'a> -> Parser<'b> -> Parser<'a list>
+    let sepBy1 p sep = 
+        let sepThenP = sep >>. p
+        p .>>. many sepThenP
+        |>> fun (p, pList) -> p::pList
+    
+    // this is my implementation before looking at the solution
+    // val sepBy: Parser<'a> -> Parser<'b> -> Parser<'a list>
+    let sepBy' p sep = 
+        let sepThenP = sep >>. p
+        (opt p) .>>. many sepThenP
+        |>> fun (p, pList) ->
+            match p with
+            | Some pValue -> pValue::pList
+            | None -> pList
+    
+    // The more elegant text book answser
+    let sepBy p sep = 
+        sepBy1 p sep <|> returnP [ ]
+
     // ----------------------------------------------------------------
-    let run = StartingPoint.run
+    let comma = pchar ','
+    let zeroOrMoreDigitList' = sepBy' digit comma
+    let zeroOrMoreDigitList = sepBy' digit comma
+    let oneOrMoreDigitList = sepBy1 digit comma
+
     let testCases  = 
         [
-            testCase "Section 7" <| fun _ ->
-                test <@ true = true @>
-        ]
+            ("oneOrMoreDigitList 1",     oneOrMoreDigitList,   "1",    Success (['1'], "") )
+            // Testing my implementation
+            ("zeroOrMoreDigitList' 1,2", zeroOrMoreDigitList', "1,2",  Success (['1'; '2'], "") )
+            ("zeroOrMoreDigitList' 1",   zeroOrMoreDigitList', "1",    Success (['1'], "") )
+            ("zeroOrMoreDigitList'",     zeroOrMoreDigitList', "",     Success ([ ], "") )
+            // Testing the text book implementation
+            ("zeroOrMoreDigitList 1,2",  zeroOrMoreDigitList, "1,2",   Success (['1'; '2'], "") )
+            ("zeroOrMoreDigitList 1",    zeroOrMoreDigitList, "1",     Success (['1'], "") )
+            ("zeroOrMoreDigitList",      zeroOrMoreDigitList, "",      Success ([ ], "") )
+         ]
 
+ module Section_8 =
+    // =============================================
+    // Section 8 - Bind
+    // =============================================
+    open StartingPoint
+
+    // ----------------------------------------------------------------
+
+    let testCases  = 
+        [
+        ]
 module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
     // -----------------------------------------------------------------------
+    let run = StartingPoint.run
     let tests = Seq.concat [
                  Seq.ofList Section_1.testCases
                  Seq.ofList Section_2.testCases
                  Seq.ofList Section_3.testCases
-                 (mapTests2 Section_4.run id Section_4.testCases)
-                 (mapTests2 Section_4.run id Section_4.pintTestCases)
+                 (mapTests2 run id Section_4.testCases)
+                 (mapTests2 run id Section_4.pintTestCases)
                  Seq.ofList Section_5.testCases
                  Seq.ofList Section_6.testCases
-                 Seq.ofList Section_7.testCases
+                 (mapTests2 run id Section_7.testCases)
+                 Seq.ofList Section_8.testCases
     ]
 
     [<Tests>] let parserTests = testList "UsefulCombiners" tests

@@ -67,6 +67,7 @@
     <None Include="ParserCombinators\README.md" />
     <Compile Include="ParserCombinators\CharParser.fs" />
     <Compile Include="ParserCombinators\UsefulCombiners.fs" />
+    <Compile Include="ParserCombinators\ImprovingTheParser.fs" />
     <None Include="ParserCombinators\Parser.fsx" />
     <Compile Include="NameParser\Models.fs" />
     <Compile Include="NameParser\NameParser.fs" />

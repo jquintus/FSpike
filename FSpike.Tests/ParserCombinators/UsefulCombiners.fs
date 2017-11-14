@@ -400,9 +400,10 @@ module Section_3  =
             testCase "pint -123ABC" <| fun _ ->
                 test <@ run pint "-123ABC" = Success(-123, "ABC") @>
         ]
+
  module Section_6  =
     // =============================================
-    // Section 6 - 
+    // Section 6 - Throwing results away
     // =============================================
     open StartingPoint
     open Section_1
@@ -410,13 +411,38 @@ module Section_3  =
     open Section_3
     open Section_4
     open Section_5
+
+    let (.>>) p1 p2 =
+        p1 .>>. p2
+        |>> fun (a, _) -> a
+
+    let (>>.) p1 p2 = 
+        p1 .>>. p2
+        |>> fun (_, b) -> b
+
+    let between p1 p2 p3 = 
+        p1 >>. p2 .>> p3
+
     // ----------------------------------------------------------------
     let run = StartingPoint.run
+
+    let digitThenSemicolon =  digit .>> opt (pchar ';')
+    let quote = pchar '"'
+    let quotedInt = between quote Section_5.pint quote
+
     let testCases  = 
         [
-            testCase "Section 6" <| fun _ ->
-                test <@ true = true @>
-        ]
+            testCase "digitThenSemicolon' 1;" <| fun _ ->
+                test <@ run digitThenSemicolon "1;" = Success ('1', "") @>
+            testCase "digitThenSemicolon' 1" <| fun _ ->
+                test <@ run digitThenSemicolon "1" = Success ('1', "") @>
+            testCase "quotedInt \"123\"" <| fun _ ->
+                test <@ run quotedInt "\"123\"" = Success(123, "") @>
+            testCase "quotedInt ABC" <| fun _ ->
+                test <@ run quotedInt "ABC" = Failure "Expecting '\"'. Got 'A'" @>
+            testCase "quotedInt \"AB\"" <| fun _ ->
+                test <@ run quotedInt "\"ABC\"" = Failure "Expecting '9'. Got 'A'" @>
+         ]
 
  module Section_7  =
     // =============================================

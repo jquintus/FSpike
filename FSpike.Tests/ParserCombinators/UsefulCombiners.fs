@@ -228,13 +228,59 @@ module Section_2  =
                 test <@ run addFirstThreeInts "2345" = Success(9, "5") @>
         ]
 
+module Section_3  =
+    // =============================================
+    // Section 3 - Lists of parsers into a single Parser
+    // =============================================
+    open StartingPoint
+    open Section_1
+    open Section_2
+
+    // val sequence Parser<'a> list -> Parser<'a list>
+    let rec sequence parserList = 
+        let cons head tail = head::tail
+        let consP = lift2 cons
+
+        match parserList with
+        | [] -> returnP []
+        | head::tail -> consP head (sequence tail)
+
+    // val charListToStr: char list -> string
+    let charListToStr charList = String(List.toArray charList)
+
+    // val pstring: string -> Parser<string>
+    let pstring str = 
+        str
+        |> List.ofSeq          // convert to List of char
+        |> List.map pchar      // map each char to a parser
+        |> sequence            // convert to a single Parser<char list>
+        |> mapP charListToStr  // convert Parser<char list> to Parser<string>
+
+    let parseABC = pstring "ABC"
+    // ----------------------------------------------------------------
+    let run = StartingPoint.run
+    let testCases  = 
+        [
+            testCase "run combined ABCDE" <| fun _ ->
+                let parsers = [pchar 'A'; pchar 'B'; pchar 'C']
+                let combined = sequence parsers
+                test <@ run combined "ABCDE" = Success (['A'; 'B'; 'C'], "DE") @>
+            testCase "run parseABC ABC" <| fun _ ->
+                test <@ run parseABC "ABC" =  Success ("ABC", "")@>
+            testCase "run parseABC ABCDE" <| fun _ ->
+                test <@ run parseABC "ABCDE" =  Success ("ABC", "DE")@>
+            testCase "run parseABC AB|C" <| fun _ ->
+                test <@ run parseABC "AB|C" =  Failure "Expecting 'C'. Got '|'" @>
+       ]
+
 module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
     // -----------------------------------------------------------------------
-    let tests = Seq.concat [
-                 Seq.ofList Section_1.testCases
-                 Seq.ofList Section_2.testCases
+    let tests = List.concat [
+                 Section_1.testCases
+                 Section_2.testCases
+                 Section_3.testCases
     ]
 
     [<Tests>] let parserTests = testList "UsefulCombiners" tests

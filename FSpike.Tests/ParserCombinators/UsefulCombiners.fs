@@ -501,12 +501,49 @@ module Section_3  =
     // Section 8 - Bind
     // =============================================
     open StartingPoint
+    open Section_4
+    // va bindP: ('a -> Parser<'b>) -> Parser<'a> -> Parser<'b>
+    let bindP f p =
+        let innerFn input = 
+            let result1 = run p input
+            match result1 with 
+            | Failure err -> 
+                Failure err
+            | Success (value1, remainignInput) -> 
+                let p2 = f value1
+                run p2 remainignInput
+
+        Parser innerFn
+    
+    // va >>=: Parser<'a> -> ('a -> Parser<'b>) -> Parser<'b>
+    let (>>=) p f = bindP f p
 
     // ----------------------------------------------------------------
+    // Reimplement other functions with bindP
+    // ----------------------------------------------------------------
+    // val returnP: 'a -> Parser<'a>
+    let returnP x =
+        let innerFn input =
+            Success (x, input)
+        Parser innerFn
 
-    let testCases  = 
-        [
-        ]
+    let mapP f = bindP (f >> returnP)
+
+    let andThen p1 p2 =         
+        p1 >>= (fun p1Result -> 
+        p2 >>= (fun p2Result -> 
+            returnP (p1Result,p2Result) ))
+
+    let applyP fP xP =         
+        fP >>= (fun f -> 
+        xP >>= (fun x -> 
+            returnP (f x) ))
+
+    let many1 p =         
+        p      >>= (fun head -> 
+        many p >>= (fun tail -> 
+            returnP (head::tail) ))
+
 module Test =
     // -----------------------------------------------------------------------
     // Run The Tests
@@ -521,7 +558,6 @@ module Test =
                  Seq.ofList Section_5.testCases
                  Seq.ofList Section_6.testCases
                  (mapTests2 run id Section_7.testCases)
-                 Seq.ofList Section_8.testCases
     ]
 
     [<Tests>] let parserTests = testList "UsefulCombiners" tests

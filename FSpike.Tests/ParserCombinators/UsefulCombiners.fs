@@ -350,7 +350,7 @@ module Section_3  =
 
  module Section_5  =
     // =============================================
-    // Section 5 - 
+    // Section 5 - opt - zero or one match
     // =============================================
     open StartingPoint
     open Section_1
@@ -358,14 +358,48 @@ module Section_3  =
     open Section_3
     open Section_4
 
+    let opt p =
+        let some = p |>> Some
+        let none = returnP None
+        some <|> none
+
+    let digit = anyOf ['0'..'9']
+
+    // val digitThenSemicolon : Parser<char * char option>
+    let digitThenSemicolon = digit .>>. opt (pchar ';')
+
+    let pint = 
+        let resultToInt (sign, digitList) =
+            let i = String(List.toArray digitList) |> int
+            match sign with
+            | Some _ -> -i
+            | None   ->  i
+
+        opt (pchar '-') .>>. digits
+        |>> resultToInt
+    
     // ----------------------------------------------------------------
     let run = StartingPoint.run
     let testCases  = 
         [
-            testCase "Section 5" <| fun _ ->
-                test <@ true = true @>
-        ]
+            testCase "digitThenSemicolon 1;" <| fun _ ->
+                test <@ run digitThenSemicolon "1;" = Success (('1', Some ';'), "") @>
+            testCase "digitThenSemicolon 1" <| fun _ ->
+                test <@ run digitThenSemicolon "1" = Success (('1', None), "") @>
 
+            testCase "pint 123" <| fun _ ->
+                test <@ run pint "123" = Success(123, "") @>
+            testCase "pint 123ABC" <| fun _ ->
+                test <@ run pint "123ABC" = Success(123, "ABC") @>
+            testCase "pint 0" <| fun _ ->
+                test <@ run pint "0" = Success(0, "") @>
+
+            // Negative cases
+            testCase "pint 123" <| fun _ ->
+                test <@ run pint "123" = Success(123, "") @>
+            testCase "pint -123ABC" <| fun _ ->
+                test <@ run pint "-123ABC" = Success(-123, "ABC") @>
+        ]
  module Section_6  =
     // =============================================
     // Section 6 - 
